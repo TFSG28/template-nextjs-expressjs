@@ -2,6 +2,8 @@
 import React from 'react';
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import ClientWrapper from '@/components/ClientWrapper';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -20,9 +22,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 theme="dark"
                 transition={Bounce}
             />
-            <ClientWrapper>
-                {children}
-            </ClientWrapper>
+            <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                <ClientWrapper>
+                    {children}
+                </ClientWrapper>
+            </SkeletonTheme>
         </>
     )
 }
