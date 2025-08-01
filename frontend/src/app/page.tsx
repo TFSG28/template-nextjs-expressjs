@@ -91,12 +91,12 @@ export default function Home() {
           )}
         </div>
         {loading ? (
-          <Skeleton width={60} height={20} />
+          <Skeleton width={60} height={20}/>
         ) : (
           <Switch isSelected={isSelected} onValueChange={() => {setIsSelected(!isSelected)}}/>
         )}
         {loading ? (
-          <Skeleton width={100} height={38} borderRadius={50} />
+          <Skeleton width={100} height={38} borderRadius={50}/>
         ) : (
           <Link href="/login">
             <button className="rounded-full bg-white border border-solid border-transparent transition-colors flex items-center justify-center text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
