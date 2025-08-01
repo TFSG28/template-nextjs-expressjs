@@ -6,10 +6,12 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Skeleton from "react-loading-skeleton";
+import { useAuth } from "@/context/auth-context";
 
 export default function Home() {
   const [isSelected, setIsSelected] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     // Simulate loading delay
@@ -98,11 +100,22 @@ export default function Home() {
         {loading ? (
           <Skeleton width={100} height={38} borderRadius={50}/>
         ) : (
-          <Link href="/login">
-            <button className="rounded-full bg-white border border-solid border-transparent transition-colors flex items-center justify-center text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
-              <p>Login</p>  
-            </button>
-          </Link>
+          <>
+            {!user ? (
+              <Link href="/login">
+                <button className="rounded-full bg-blue-500 border border-solid border-transparent transition-colors flex items-center justify-center text-white gap-2 hover:bg-blue-600 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+                  <p>Login</p>  
+                </button>
+              </Link>
+            ) : (
+              <button 
+                className="rounded-full bg-red-500 border border-solid border-transparent transition-colors flex items-center justify-center text-white gap-2 hover:bg-red-600 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
+                onClick={logout}
+              >
+                <p>Logout</p>  
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

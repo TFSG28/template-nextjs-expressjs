@@ -31,12 +31,13 @@ const Login = () => {
 
             if (response.status === 200) {
                 login(ans.token, rememberMe);
-                router.push('/dashboard');
+                router.push('/');
             } else {
                 setError('Erro de credenciais.');
                 setTimeout(() => setError(''), 2500);
             }
         } catch (error) {
+            console.log(error);
             setLoading(false);
         }
         finally {
@@ -45,9 +46,9 @@ const Login = () => {
     });
     useEffect(() => {
         if (user) {
-            router.push('/dashboard');
+            router.push('/');
         }
-    }, [user]);
+    }, [user, router]);
     return (
         <div>
             <form
