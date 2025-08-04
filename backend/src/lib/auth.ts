@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // JWT secret - should be in environment variables in production
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -11,11 +11,16 @@ interface UserSession {
   role?: string;
 }
 
+interface RequestWithUser extends Request {
+  user?: JwtPayload;
+}
+
 // Extract user from JWT token
 export function getUserFromToken(token: string): UserSession | null {
   try {
     return jwt.verify(token, JWT_SECRET) as UserSession;
   } catch (error) {
+    console.error(error);
     return null;
   }
 }
@@ -43,10 +48,10 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     const user = jwt.verify(token, JWT_SECRET) as UserSession;
     
     // Attach user to request for later use
-    (req as any).user = user;
+    (req as RequestWithUser).user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Unauthorized" });
+    return res.status(401).json({ error: "Unauthorized", message: error });
   }
 }
 
@@ -67,10 +72,10 @@ export function requireRole(allowedRoles: string[]) {
       }
       
       // Attach user to request for later use
-      (req as any).user = user;
+      (req as RequestWithUser).user = user;
       next();
     } catch (error) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: "Unauthorized", message: error });
     }
   };
 }

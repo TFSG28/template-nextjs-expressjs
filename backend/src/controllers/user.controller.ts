@@ -40,7 +40,7 @@ export const user: RequestHandler = async (req, res) => {
             return;
         }
 
-        res.status(500).json({ message: 'Error del servidor' });
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
@@ -63,7 +63,7 @@ export const registerUser: RequestHandler = async (req, res) => {
         });
         res.status(201).json({ message: 'Utilizador criado com sucesso' });
     } catch (error) {
-        res.status(500).json({ message: 'Error del servidor' });
+        res.status(500).json({ message: 'Internal server error' + error });
     }
 }
 

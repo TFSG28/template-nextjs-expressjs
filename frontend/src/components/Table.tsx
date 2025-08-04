@@ -2,9 +2,6 @@ import React, { createContext, useContext } from 'react';
 
 // Types exactos de HeroUI
 type AlignType = 'start' | 'center' | 'end';
-type SelectionMode = 'none' | 'single' | 'multiple';
-type SelectionBehavior = 'toggle' | 'replace';
-type ColorType = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
 type RadiusType = 'none' | 'sm' | 'md' | 'lg';
 type ShadowType = 'none' | 'sm' | 'md' | 'lg';
 
@@ -21,11 +18,6 @@ interface ClassNames {
     sortIcon?: string;
     emptyWrapper?: string;
     loadingWrapper?: string;
-}
-
-interface SortDescriptor {
-    column: React.Key;
-    direction: 'ascending' | 'descending';
 }
 
 interface TableProps {

@@ -50,11 +50,13 @@ const Login = () => {
             setLoading(false);
         }
     });
+
     useEffect(() => {
         if (user) {
             router.push('/');
         }
     }, [user, router]);
+    
     useEffect(() => {
         // Simulate loading delay
         const timer = setTimeout(() => {
@@ -67,12 +69,12 @@ const Login = () => {
     return (
         <div className='flex flex-col items-center justify-center h-screen'>
             {loading ? (
-                <Skeleton width={300} height={500} />
+                <Skeleton width={400} height={500} borderRadius={10}/>
             ) : (
                 <div className="relative z-10 max-w-md w-full">
                     <form
                         onSubmit={onSubmit}
-                        className="bg-white p-8 rounded-lg shadow-sm"
+                        className="bg-white p-8 rounded-lg shadow-sm w-[400px]"
                     >
                         <div className="flex flex-col gap-6">
                             <div>

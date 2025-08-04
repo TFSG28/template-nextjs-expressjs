@@ -7,13 +7,6 @@ const ColorSlider: React.FC = () => {
     setValue(Number(e.target.value));
   };
 
-  const getColor = (val: number): string => {
-    const percent = val / 5;
-    const r = Math.round(255 * (1 - percent));
-    const g = Math.round(255 * percent);
-    return `rgb(${r}, ${g}, 0)`;
-  };
-
   return (
     <div className="w-[300px] px-4 py-6">
       {/* Slider Track & Gradient Layered */}
@@ -47,14 +40,6 @@ const ColorSlider: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Value label */}
-      <div
-        className="text-center text-lg font-medium"
-        style={{ color: getColor(value) }}
-      >
-        Value: {value}
       </div>
     </div>
   );

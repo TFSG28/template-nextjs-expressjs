@@ -1,42 +1,52 @@
-import { RequestHandler } from 'express';
-import { prisma } from '../lib/prisma';
-import { randomBytes } from 'crypto';
-import nodemailer from 'nodemailer';
-import bcrypt from 'bcryptjs';
-
-export const passwdRecovery: RequestHandler = async (req, res) => {
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resetPassword = exports.passwdRecovery = void 0;
+const prisma_1 = require("../lib/prisma");
+const crypto_1 = require("crypto");
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const passwdRecovery = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
     if (!email) {
         res.status(400).json({ message: 'Email is required' });
         return;
     }
-
     try {
-        const user = await prisma.user.findUnique({ where: { email } });
-        const tokenExist = await prisma.passwordResetToken.findUnique({ where: { email } });
+        const user = yield prisma_1.prisma.user.findUnique({ where: { email } });
+        const tokenExist = yield prisma_1.prisma.passwordResetToken.findUnique({ where: { email } });
         if (!user) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
-
-        const token = randomBytes(32).toString("hex");
+        const token = (0, crypto_1.randomBytes)(32).toString("hex");
         if (tokenExist) {
-            await prisma.passwordResetToken.update({
+            yield prisma_1.prisma.passwordResetToken.update({
                 where: { email },
                 data: { token }
             });
         }
         else {
-            await prisma.passwordResetToken.create({
-                data: { email, 
-                    token, 
-                    expires: new Date(Date.now() + 3600000), 
-                    userId: user.id 
+            yield prisma_1.prisma.passwordResetToken.create({
+                data: { email,
+                    token,
+                    expires: new Date(Date.now() + 3600000),
+                    userId: user.id
                 }
             });
         }
-
-        const transporter = nodemailer.createTransport({
+        const transporter = nodemailer_1.default.createTransport({
             host: process.env.IP_SERVER,
             port: 465,
             secure: true,
@@ -47,11 +57,10 @@ export const passwdRecovery: RequestHandler = async (req, res) => {
             tls: {
                 rejectUnauthorized: false,
             },
-        });     
-        
+        });
         const mailOptions = {
             from: `Webmaster <${process.env.EMAIL}>`,
-            to: user?.email,
+            to: user === null || user === void 0 ? void 0 : user.email,
             subject: `Recuperação de Password`,
             html: `
             <!DOCTYPE html>
@@ -172,7 +181,7 @@ export const passwdRecovery: RequestHandler = async (req, res) => {
                     </div>
                     
                     <div class="content">
-                        <div class="greeting">Dear ${user?.name} ${user?.lastname},</div>
+                        <div class="greeting">Dear ${user === null || user === void 0 ? void 0 : user.name} ${user === null || user === void 0 ? void 0 : user.lastname},</div>
                         
                         <div class="message">
                             <p>Você solicitou a recuperação da sua password,</p>
@@ -195,19 +204,19 @@ export const passwdRecovery: RequestHandler = async (req, res) => {
             </html>
         `,
         };
-        await transporter.sendMail(mailOptions);
-        
+        yield transporter.sendMail(mailOptions);
         res.status(200).json({ message: 'Email sent successfully' });
-    } catch (error) {
+    }
+    catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Internal server error' });
     }
-}
-
-export const resetPassword: RequestHandler = async (req, res) => {
+});
+exports.passwdRecovery = passwdRecovery;
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token, password } = req.body;
-        const resetToken = await prisma.passwordResetToken.findUnique({
+        const resetToken = yield prisma_1.prisma.passwordResetToken.findUnique({
             where: { token }
         });
         if (!resetToken) {
@@ -215,24 +224,25 @@ export const resetPassword: RequestHandler = async (req, res) => {
             return;
         }
         if (resetToken.expires < new Date()) {
-            await prisma.passwordResetToken.delete({ where: { token } });
+            yield prisma_1.prisma.passwordResetToken.delete({ where: { token } });
             res.status(401).json({ message: 'Token has expired' });
             return;
         }
-        const user = await prisma.user.findUnique({ where: { id: resetToken.userId } });
+        const user = yield prisma_1.prisma.user.findUnique({ where: { id: resetToken.userId } });
         if (!user) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await prisma.user.update({
+        const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
+        yield prisma_1.prisma.user.update({
             where: { id: user.id },
             data: { password: hashedPassword }
         });
-        await prisma.passwordResetToken.delete({ where: { token } });
+        yield prisma_1.prisma.passwordResetToken.delete({ where: { token } });
         res.status(200).json({ message: 'Password updated successfully' });
-    } catch (error) {
+    }
+    catch (error) {
         res.status(500).json({ message: 'Internal server error' + error });
     }
-}
-
+});
+exports.resetPassword = resetPassword;
