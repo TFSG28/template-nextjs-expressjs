@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Skeleton from "react-loading-skeleton";
 import { useAuth } from "@/context/auth-context";
+import SlideBar from "@/components/SlideBar";
 
 export default function Home() {
   const [isSelected, setIsSelected] = useState(false);
@@ -117,6 +118,9 @@ export default function Home() {
             )}
           </>
         )}
+        <div>
+          <SlideBar />
+        </div>
       </div>
     </div>
   );
