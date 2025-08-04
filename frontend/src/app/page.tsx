@@ -118,9 +118,13 @@ export default function Home() {
             )}
           </>
         )}
-        <div>
-          <SlideBar />
-        </div>
+        {loading ? (
+          <Skeleton width={300} height={38} borderRadius={50}/>
+        ) : (
+          <div>
+            <SlideBar />
+          </div>
+        )}
       </div>
     </div>
   );

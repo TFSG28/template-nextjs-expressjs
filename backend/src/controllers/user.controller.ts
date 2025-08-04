@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { prisma } from '../lib/prisma';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 export const user: RequestHandler = async (req, res) => {
     try {
@@ -42,3 +43,28 @@ export const user: RequestHandler = async (req, res) => {
         res.status(500).json({ message: 'Error del servidor' });
     }
 }
+
+export const registerUser: RequestHandler = async (req, res) => {
+    try {
+        const { name, email, password, lastname } = req.body;
+        if (!name || !email || !password || !lastname) {
+            res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+            return;
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                lastname,
+                role: 1
+            }
+        });
+        res.status(201).json({ message: 'Utilizador criado com sucesso' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+}
+
+

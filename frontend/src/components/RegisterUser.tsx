@@ -1,6 +1,4 @@
-// Login.tsx
 'use client';
-import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
@@ -9,25 +7,25 @@ import { FaEye } from 'react-icons/fa';
 import { FaEyeSlash } from 'react-icons/fa';
 import { FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
+import { toast } from 'react-toastify';
 
-type LoginForm = {
+type RegisterForm = {
+    name: string;
+    lastname: string;
     email: string;
     password: string;
 }
 
-const Login = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
-    const { login, user } = useAuth();
+export default function RegisterUser() {
+    const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(true);
-    const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
 
     const onSubmit = handleSubmit(async (data) => {
-        setLoading(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -35,26 +33,20 @@ const Login = () => {
 
             const ans = await response.json();
 
-            if (response.status === 200) {
-                login(ans.token, rememberMe);
-                router.push('/');
+            if (response.status === 201) {
+                toast.success('Account created successfully');
+                router.push('/login');
             } else {
-                setError('Erro de credenciais.');
+                setError(ans.message || 'Erro ao criar conta.');
                 setTimeout(() => setError(''), 2500);
             }
         } catch (error) {
             console.log(error);
-            setLoading(false);
-        }
-        finally {
-            setLoading(false);
+            setError('Ocorreu um erro. Tente novamente.');
+            setTimeout(() => setError(''), 2500);
         }
     });
-    useEffect(() => {
-        if (user) {
-            router.push('/');
-        }
-    }, [user, router]);
+
     useEffect(() => {
         // Simulate loading delay
         const timer = setTimeout(() => {
@@ -67,7 +59,7 @@ const Login = () => {
     return (
         <div className='flex flex-col items-center justify-center h-screen'>
             {loading ? (
-                <Skeleton width={300} height={500} />
+                <Skeleton width={400} height={500} />
             ) : (
                 <div className="relative z-10 max-w-md w-full">
                     <form
@@ -76,10 +68,50 @@ const Login = () => {
                     >
                         <div className="flex flex-col gap-6">
                             <div>
-                                <h3 className="text-center text-3xl font-bold text-gray-800">Iniciar sessão</h3>
+                                <h3 className="text-center text-3xl font-bold text-gray-800">Criar conta</h3>
                                 <p className="mt-2 text-center text-sm text-gray-600">
-                                    Entre com seu email e palavra-passe
+                                    Preencha os dados para criar a sua conta
                                 </p>
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label htmlFor="name" className="text-gray-700 mb-1 font-medium">
+                                    <p>Nome</p>
+                                </label>
+                                <input
+                                    id="name"
+                                    {...register('name', {
+                                        required: 'Campo obrigatório',
+                                        minLength: {
+                                            value: 2,
+                                            message: 'Mínimo 2 caracteres'
+                                        }
+                                    })}
+                                    placeholder='Nome'
+                                    className="rounded-lg py-2 px-4 text-gray-800 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    type="text"
+                                />
+                                {errors.name && <span className='text-red-600 text-sm mt-1'>{errors.name.message}</span>}
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label htmlFor="lastname" className="text-gray-700 mb-1 font-medium">
+                                    <p>Apelido</p>
+                                </label>
+                                <input
+                                    id="lastname"
+                                    {...register('lastname', {
+                                        required: 'Campo obrigatório',
+                                        minLength: {
+                                            value: 2,
+                                            message: 'Mínimo 2 caracteres'
+                                        }
+                                    })}
+                                    placeholder='Apelido'
+                                    className="rounded-lg py-2 px-4 text-gray-800 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    type="text"
+                                />
+                                {errors.lastname && <span className='text-red-600 text-sm mt-1'>{errors.lastname.message}</span>}
                             </div>
 
                             <div className="flex flex-col">
@@ -89,7 +121,7 @@ const Login = () => {
                                 <input
                                     id="email"
                                     {...register('email', {
-                                        required: 'Campo obligatorio',
+                                        required: 'Campo obrigatório',
                                         pattern: {
                                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                             message: 'Email inválido'
@@ -111,7 +143,7 @@ const Login = () => {
                                     <input
                                         id="password"
                                         {...register('password', {
-                                            required: 'Campo obligatorio',
+                                            required: 'Campo obrigatório',
                                             minLength: {
                                                 value: 6,
                                                 message: 'Mínimo 6 caracteres'
@@ -120,7 +152,7 @@ const Login = () => {
                                         placeholder='*****'
                                         className="rounded-lg py-2 px-4 text-gray-800 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
                                         type={showPassword ? "text" : "password"}
-                                        autoComplete="current-password"
+                                        autoComplete="new-password"
                                     />
                                     <button 
                                         type="button"
@@ -133,28 +165,9 @@ const Login = () => {
                                 {errors.password && <span className='text-red-600 text-sm mt-1'>{errors.password.message}</span>}
                             </div>
 
-                            <div className="flex items-center mt-2">
-                                <input
-                                    type="checkbox"
-                                    id="rememberMe"
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="mr-2 h-4 w-4 text-green-600 rounded"
-                                />
-                                <label htmlFor="rememberMe" className="text-sm cursor-pointer text-gray-700">
-                                    Lembrar a sessão
-                                </label>
-                            </div>
-
                             <div className="flex justify-end">
-                                <Link href='/forgot-password' className='text-sm text-gray-600 hover:text-green-600'>
-                                    Esqueceu a sua palavra-passe?
-                                </Link>
-                            </div>
-
-                            <div className="flex justify-end">
-                                <Link href='/register' className='text-sm text-gray-600 hover:text-green-600'>
-                                    Criar conta
+                                <Link href='/login' className='text-sm text-gray-600 hover:text-green-600'>
+                                    Já tem conta? Entrar
                                 </Link>
                             </div>
 
@@ -163,7 +176,7 @@ const Login = () => {
                                 className='bg-[#162F08] hover:bg-green-700 transition-colors w-full font-semibold cursor-pointer text-white py-3 px-4 rounded-lg shadow-sm'
                                 disabled={loading}
                             >
-                                <p>Entrar</p>
+                                <p>Registar</p>
                             </button>
                         </div>
 
@@ -181,7 +194,6 @@ const Login = () => {
                 </div>
             )}
         </div>
-    )
+    );
 }
 
-export default Login;

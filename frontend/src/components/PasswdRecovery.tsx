@@ -1,12 +1,14 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaRegCircleCheck, FaRegCircleXmark } from 'react-icons/fa6';
+import Skeleton from 'react-loading-skeleton';
 
 const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => void }) => {
     const { register, handleSubmit } = useForm();
     const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
     const onSubmit = handleSubmit(async (data) => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/passwdRecovery`, {
@@ -27,10 +29,22 @@ const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => vo
             setTimeout(() => setError(''), 2000);
         }
     });
+
+    useEffect(() => {
+        // Simulate loading delay
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+        
+        return () => clearTimeout(timer);
+    }, []);
     return (
         <div className='flex flex-col items-center justify-center h-screen'>
-        <div className="relative z-10 max-w-md w-full">
-            <form onSubmit={onSubmit} className="bg-white p-8 rounded-lg shadow-sm">
+            {loading ? (
+                <Skeleton width={500} height={300} />
+            ) : (
+                <div className="relative z-10 max-w-md w-full">
+                    <form onSubmit={onSubmit} className="bg-white p-8 rounded-lg shadow-sm">
                 <div className='flex flex-col gap-6'>
                     <div>
                     <h3 className="text-center text-3xl font-bold text-gray-800">Recuperação de Palavra-Passe</h3>
@@ -79,7 +93,8 @@ const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => vo
                 </div>
             )}
             </form>
-            </div>
+                </div>
+            )}
         </div>
     )
 }
