@@ -6,7 +6,7 @@ interface RequestWithUser extends Request {
   user?: JwtPayload;
 }
 
-const guestOnlyPaths = ['/login', '/registar'];
+const guestOnlyPaths = ['/login', '/registar', '/forgot-password', '/reset-password'];
 // Change this to the paths that are protected
 const protectedPaths = ['PATHS'];
 

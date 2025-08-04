@@ -2,8 +2,13 @@
 'use client';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaEye } from 'react-icons/fa';
+import { FaEyeSlash } from 'react-icons/fa';
+import { FaRegCircleXmark } from 'react-icons/fa6';
+import Skeleton from 'react-loading-skeleton';
 
 type LoginForm = {
     email: string;
@@ -14,8 +19,9 @@ const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
     const { login, user } = useAuth();
     const router = useRouter();
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
 
     const onSubmit = handleSubmit(async (data) => {
@@ -49,70 +55,125 @@ const Login = () => {
             router.push('/');
         }
     }, [user, router]);
+    useEffect(() => {
+        // Simulate loading delay
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+        
+        return () => clearTimeout(timer);
+    }, []);
+    
     return (
-        <div>
-            <form
-                onSubmit={onSubmit}
-                className='flex flex-col justify-center items-center p-10 gap-5 w-fit bg-blue-500 rounded'>
-                <h1 className="text-2xl font-bold mb-4">Iniciar sessão</h1>
+        <div className='flex flex-col items-center justify-center h-screen'>
+            {loading ? (
+                <Skeleton width={400} height={500} />
+            ) : (
+                <div className="relative z-10 max-w-md w-full">
+                    <form
+                        onSubmit={onSubmit}
+                        className="bg-white p-8 rounded-lg shadow-sm"
+                    >
+                        <div className="flex flex-col gap-6">
+                            <div>
+                                <h3 className="text-center text-3xl font-bold text-gray-800">Iniciar sessão</h3>
+                                <p className="mt-2 text-center text-sm text-gray-600">
+                                    Entre com seu email e palavra-passe
+                                </p>
+                            </div>
 
-                <div className='flex flex-col gap-3 w-full'>
-                    <label>Email</label>
-                    <input
-                        {...register('email', {
-                            required: 'Campo obligatorio',
-                            pattern: {
-                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: 'Email inválido'
-                            }
-                        })}
-                        placeholder='Email'
-                        className='border rounded p-2 w-64'
-                        type="email"
-                    />
-                    {errors.email && <span className='text-red-600 text-sm'>{errors.email.message}</span>}
+                            <div className="flex flex-col">
+                                <label htmlFor="email" className="text-gray-700 mb-1 font-medium">
+                                    <p>Email</p>
+                                </label>
+                                <input
+                                    id="email"
+                                    {...register('email', {
+                                        required: 'Campo obligatorio',
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: 'Email inválido'
+                                        }
+                                    })}
+                                    placeholder='Email'
+                                    className="rounded-lg py-2 px-4 text-gray-800 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    type="email"
+                                    autoComplete="email"
+                                />
+                                {errors.email && <span className='text-red-600 text-sm mt-1'>{errors.email.message}</span>}
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label htmlFor="password" className="text-gray-700 mb-1 font-medium">
+                                    <p>Palavra-passe</p>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        {...register('password', {
+                                            required: 'Campo obligatorio',
+                                            minLength: {
+                                                value: 6,
+                                                message: 'Mínimo 6 caracteres'
+                                            }
+                                        })}
+                                        placeholder='*****'
+                                        className="rounded-lg py-2 px-4 text-gray-800 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
+                                        type={showPassword ? "text" : "password"}
+                                        autoComplete="current-password"
+                                    />
+                                    <button 
+                                        type="button"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </button>
+                                </div>
+                                {errors.password && <span className='text-red-600 text-sm mt-1'>{errors.password.message}</span>}
+                            </div>
+
+                            <div className="flex items-center mt-2">
+                                <input
+                                    type="checkbox"
+                                    id="rememberMe"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                    className="mr-2 h-4 w-4 text-green-600 rounded"
+                                />
+                                <label htmlFor="rememberMe" className="text-sm cursor-pointer text-gray-700">
+                                    Lembrar a sessão
+                                </label>
+                            </div>
+
+                            <div className="flex justify-end">
+                                <Link href='/forgot-password' className='text-sm text-gray-600 hover:text-green-600'>
+                                    Esqueceu a sua palavra-passe?
+                                </Link>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className='bg-[#162F08] hover:bg-green-700 transition-colors w-full font-semibold cursor-pointer text-white py-3 px-4 rounded-lg shadow-sm'
+                                disabled={loading}
+                            >
+                                <p>Entrar</p>
+                            </button>
+                        </div>
+
+                        {error !== '' && (
+                            <div className='bg-red-50 border-l-4 border-red-500 p-4 mt-6 flex items-center rounded'>
+                                <div className="flex-shrink-0">
+                                    <FaRegCircleXmark className='h-5 w-5 text-red-500' />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm text-red-700">{error}</p>
+                                </div>
+                            </div>
+                        )}
+                    </form>
                 </div>
-
-                <div className='flex flex-col gap-3 w-full'>
-                    <label>Palavra-passe</label>
-                    <input
-                        {...register('password', {
-                            required: 'Campo obligatorio',
-                            minLength: {
-                                value: 6,
-                                message: 'Mínimo 6 caracteres'
-                            }
-                        })}
-                        placeholder='*****'
-                        className='border rounded p-2 w-64'
-                        type="password"
-                    />
-                    {errors.password && <span className='text-red-600 text-sm'>{errors.password.message}</span>}
-                </div>
-
-                {/* Checkbox para Remember Me */}
-                <div className="flex items-center w-full mt-2">
-                    <input
-                        type="checkbox"
-                        id="rememberMe"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="mr-2 h-4 w-4 text-purple-600 rounded"
-                    />
-                    <label htmlFor="rememberMe" className="text-sm cursor-pointer">
-                        Lembrar a sessão
-                    </label>
-                </div>
-
-                <button
-                    type="submit"
-                    className='bg-purple-500 px-4 py-2 rounded hover:bg-purple-600 cursor-pointer w-full mt-4 transition-colors'
-                    disabled={loading}
-                >
-                    Entrar
-                </button>
-                {error !== '' && <span className='text-red-600 text-sm'>{error}</span>}
-            </form>
+            )}
         </div>
     )
 }
