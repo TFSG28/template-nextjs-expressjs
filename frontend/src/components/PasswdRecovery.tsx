@@ -1,14 +1,24 @@
 'use client';
+import { useAuth } from '@/context/auth-context';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaRegCircleCheck, FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
+import { useRouter } from 'next/navigation';
 
 const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => void }) => {
     const { register, handleSubmit } = useForm();
     const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const { user } = useAuth();
+
+    useEffect(() => {
+        if (user) {
+            router.push('/');
+        }
+    }, [user, router]);
     const onSubmit = handleSubmit(async (data) => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/passwdRecovery`, {

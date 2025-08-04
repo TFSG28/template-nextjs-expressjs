@@ -8,6 +8,7 @@ import { FaEyeSlash } from 'react-icons/fa';
 import { FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/context/auth-context';
 
 type RegisterForm = {
     name: string;
@@ -22,6 +23,13 @@ export default function RegisterUser() {
     const [loading, setLoading] = useState<boolean>(true);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const { user } = useAuth();
+
+    useEffect(() => {
+        if (user) {
+            router.push('/');
+        }
+    }, [user, router]);
 
     const onSubmit = handleSubmit(async (data) => {
         try {
