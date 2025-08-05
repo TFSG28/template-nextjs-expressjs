@@ -1,10 +1,11 @@
 'use client';
-import { useAuth } from '@/context/auth-context';
+import { useAuth, UserType } from '@/context/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useState, Suspense, useEffect } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { BsQuestionCircleFill } from 'react-icons/bs';
 import { FaEye, FaEyeSlash, FaRegCircleCheck } from 'react-icons/fa6';
+import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
 
 const ResetPasswordContent = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -13,14 +14,9 @@ const ResetPasswordContent = () => {
     const [seePass, setSeePass] = useState(false);
     const [changed, setChanged] = useState(false);
     const navigator = useRouter();
-    const router = useRouter();
     const { user } = useAuth();
 
-    useEffect(() => {
-        if (user) {
-            router.push('/');
-        }
-    }, [user, router]);
+    useRedirectIfAuthenticated(user as UserType);
     
     const successed = () => {
         setChanged(true);

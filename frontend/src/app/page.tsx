@@ -3,26 +3,20 @@ import Switch from "@/components/Switch";
 import Tooltip from "@/components/Tooltip";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Skeleton from "react-loading-skeleton";
 import { useAuth } from "@/context/auth-context";
 import SlideBar from "@/components/SlideBar";
 import { Button } from "@mui/material";
+import { useSimulatedLoading } from "@/hooks/useSimulatedLoading";
 
 export default function Home() {
   const [isSelected, setIsSelected] = useState(false);
   const [loading, setLoading] = useState(true);
   const { logout, user } = useAuth();
 
-  useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+  useSimulatedLoading(setLoading);
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">

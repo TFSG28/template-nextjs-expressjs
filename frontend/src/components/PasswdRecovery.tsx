@@ -1,24 +1,20 @@
 'use client';
-import { useAuth } from '@/context/auth-context';
+import { useAuth, UserType } from '@/context/auth-context';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaRegCircleCheck, FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
-import { useRouter } from 'next/navigation';
-
+import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => void }) => {
     const { register, handleSubmit } = useForm();
     const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
-    const router = useRouter();
     const { user } = useAuth();
 
-    useEffect(() => {
-        if (user) {
-            router.push('/');
-        }
-    }, [user, router]);
+    useRedirectIfAuthenticated(user as UserType);
+
     const onSubmit = handleSubmit(async (data) => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/passwdRecovery`, {
@@ -40,14 +36,8 @@ const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => vo
         }
     });
 
-    useEffect(() => {
-        // Simulate loading delay
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 2000);
-        
-        return () => clearTimeout(timer);
-    }, []);
+    useSimulatedLoading(setLoading);
+
     return (
         <div className='flex flex-col items-center justify-center h-screen'>
             {loading ? (

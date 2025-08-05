@@ -17,7 +17,7 @@ const authMiddleware = (req, res, next) => {
     const token = ((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.token) || ((_c = (_b = req.headers['authorization']) === null || _b === void 0 ? void 0 : _b.split(' ')[1]) !== null && _c !== void 0 ? _c : null);
     // Redirect authenticated users away from guest-only paths
     if (token && isPathMatching(path, guestOnlyPaths)) {
-        return res.redirect('/dashboard');
+        return res.redirect('/');
     }
     // Allow guests on guest pages
     if (guestOnlyPaths.includes(path))

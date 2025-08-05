@@ -8,8 +8,9 @@ import { FaEyeSlash } from 'react-icons/fa';
 import { FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
 import { toast } from 'react-toastify';
-import { useAuth } from '@/context/auth-context';
-
+import { useAuth, UserType } from '@/context/auth-context';
+import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 type RegisterForm = {
     name: string;
     lastname: string;
@@ -25,11 +26,7 @@ export default function RegisterUser() {
     const [error, setError] = useState<string>('');
     const { user } = useAuth();
 
-    useEffect(() => {
-        if (user) {
-            router.push('/');
-        }
-    }, [user, router]);
+    useRedirectIfAuthenticated(user as UserType);
 
     const onSubmit = handleSubmit(async (data) => {
         try {
@@ -55,14 +52,7 @@ export default function RegisterUser() {
         }
     });
 
-    useEffect(() => {
-        // Simulate loading delay
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 2000);
-        
-        return () => clearTimeout(timer);
-    }, []);
+    useSimulatedLoading(setLoading);
     
     return (
         <div className='flex flex-col items-center justify-center h-screen'>

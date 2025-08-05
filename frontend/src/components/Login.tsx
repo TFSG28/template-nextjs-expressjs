@@ -2,12 +2,15 @@
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaEye } from 'react-icons/fa';
 import { FaEyeSlash } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; 
+import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
+import { UserType } from '@/context/auth-context';
 
 type LoginForm = {
     email: string;
@@ -48,20 +51,8 @@ const Login = () => {
         }
     });
 
-    useEffect(() => {
-        if (user) {
-            router.push('/');
-        }
-    }, [user, router]);
-    
-    useEffect(() => {
-        // Simulate loading delay
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 2000);
-        
-        return () => clearTimeout(timer);
-    }, []);
+    useRedirectIfAuthenticated(user as UserType);
+    useSimulatedLoading(setLoading);
     
     return (
         <div className='flex flex-col items-center justify-center h-screen'>

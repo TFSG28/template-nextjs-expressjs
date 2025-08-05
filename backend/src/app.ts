@@ -9,8 +9,8 @@ const app: Application = express();
 
 // Rate limiting - apply early to protect against abuse
 const limiter = rateLimit({
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    limit: 10, // each IP can make up to 10 requests per windowMs (5 minutes)
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 200, // each IP can make up to 200 requests per windowMs (15 minutes)
     standardHeaders: true, // add the RateLimit-* headers to the response
     legacyHeaders: false, // remove the X-RateLimit-* headers from the response
     message: {
@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(limiter);
 
 // Apply caching before routes
-app.use('/api', cache('5 minutes'));
+app.use('/', cache('5 minutes'));
 
 // Apply authentication middleware before routes
 app.use('/', authMiddleware);
@@ -49,7 +49,7 @@ app.use('/', authMiddleware);
 app.use('/api', routes);
 
 // Global error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
     console.error(err.stack);
     res.status(500).json({ 
         error: process.env.NODE_ENV === 'production' 
