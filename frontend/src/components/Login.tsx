@@ -1,4 +1,3 @@
-// Login.tsx
 'use client';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
@@ -7,8 +6,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaEye } from 'react-icons/fa';
 import { FaEyeSlash } from 'react-icons/fa';
-import { FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
+import { toast } from 'react-toastify';
 
 type LoginForm = {
     email: string;
@@ -22,7 +21,6 @@ const Login = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
 
     const onSubmit = handleSubmit(async (data) => {
         setLoading(true);
@@ -39,8 +37,7 @@ const Login = () => {
                 login(ans.token, rememberMe);
                 router.push('/');
             } else {
-                setError('Erro de credenciais.');
-                setTimeout(() => setError(''), 2500);
+                toast.error('Erro de credenciais.');
             }
         } catch (error) {
             console.log(error);
@@ -168,17 +165,6 @@ const Login = () => {
                                 <p>Entrar</p>
                             </button>
                         </div>
-
-                        {error !== '' && (
-                            <div className='bg-red-50 border-l-4 border-red-500 p-4 mt-6 flex items-center rounded'>
-                                <div className="flex-shrink-0">
-                                    <FaRegCircleXmark className='h-5 w-5 text-red-500' />
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm text-red-700">{error}</p>
-                                </div>
-                            </div>
-                        )}
                     </form>
                 </div>
             )}

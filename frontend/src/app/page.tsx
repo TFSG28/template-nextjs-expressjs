@@ -9,6 +9,7 @@ import Skeleton from "react-loading-skeleton";
 import { useAuth } from "@/context/auth-context";
 import SlideBar from "@/components/SlideBar";
 import { Button } from "@mui/material";
+
 export default function Home() {
   const [isSelected, setIsSelected] = useState(false);
   const [loading, setLoading] = useState(true);
