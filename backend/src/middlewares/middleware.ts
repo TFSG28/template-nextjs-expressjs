@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import path from 'path';
 
 // Define interface to extend Request type
 interface RequestWithUser extends Request {
@@ -20,7 +21,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
   // Redirect authenticated users away from guest-only paths
   if (token && isPathMatching(path, guestOnlyPaths)) {
-    return res.redirect('/dashboard');
+    return res.redirect('/');
   }
 
   // Allow guests on guest pages

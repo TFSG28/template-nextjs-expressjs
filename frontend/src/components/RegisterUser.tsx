@@ -33,7 +33,7 @@ export default function RegisterUser() {
 
     const onSubmit = handleSubmit(async (data) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/register`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

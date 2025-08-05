@@ -21,7 +21,7 @@ const PasswdRecovery = ({ setRecovery }: { setRecovery: (boolean: boolean) => vo
     }, [user, router]);
     const onSubmit = handleSubmit(async (data) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/passwdRecovery`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/passwdRecovery`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

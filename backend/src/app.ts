@@ -1,33 +1,61 @@
 import express, { Application } from 'express';
 import routes from './routes';
 import cors from 'cors';
-import { rateLimit } from 'express-rate-limit'
-import apicache from 'apicache'
-import { authMiddleware } from './middlewares/middleware'
-
-const limiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	limit: 200, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-	ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
-})
-
-const cache = apicache.middleware
+import { rateLimit } from 'express-rate-limit';
+import apicache from 'apicache';
+import { authMiddleware } from './middlewares/middleware';
 
 const app: Application = express();
 
-app.use(cors({
-    origin: '*',
+// Rate limiting - apply early to protect against abuse
+const limiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    limit: 10, // each IP can make up to 10 requests per windowMs (5 minutes)
+    standardHeaders: true, // add the RateLimit-* headers to the response
+    legacyHeaders: false, // remove the X-RateLimit-* headers from the response
+    message: {
+        error: 'Too many requests, please try again later.'
+    }
+});
+
+// Cache middleware
+const cache = apicache.middleware; 
+
+// CORS configuration - be more restrictive in production
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://yourdomain.com', 'https://www.yourdomain.com'] // Replace with your actual domains
+        : '*', // Allow all origins in development
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-}));
+    credentials: true // Allow cookies/auth headers
+};
 
-app.use(express.json());
-app.use('/', routes);
-// Apply the rate limiting middleware to all requests.
-app.use(limiter)
-app.use(cache('5 minutes'))
-app.use(authMiddleware)
+// Apply middleware in correct order
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' })); // Add size limit for security
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); 
+
+// Apply rate limiting to all requests
+app.use(limiter);
+
+// Apply caching before routes
+app.use('/api', cache('5 minutes'));
+
+// Apply authentication middleware before routes
+app.use('/', authMiddleware);
+
+// Routes come last
+app.use('/api', routes);
+
+// Global error handler
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ 
+        error: process.env.NODE_ENV === 'production' 
+            ? 'Something went wrong!' 
+            : err.message 
+    });
+});
 
 export default app;
