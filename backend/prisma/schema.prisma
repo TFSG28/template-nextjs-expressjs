@@ -33,3 +33,12 @@ model PasswordResetToken {
   userId  String
   createdAt DateTime @default(now())
 }
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  level     String   
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  createdBy String
+}

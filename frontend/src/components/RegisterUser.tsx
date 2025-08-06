@@ -8,10 +8,10 @@ import { FaEyeSlash } from 'react-icons/fa';
 import { FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';
 import { toast } from 'react-toastify';
-import { useAuth, UserType } from '@/context/auth-context';
+import { useAuth } from '@/context/auth-context';
 import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
-import { RegisterForm } from '@/types/types';
+import { RegisterForm, UserType } from '@/types/types';
 
 export default function RegisterUser() {
     const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
@@ -41,7 +41,7 @@ export default function RegisterUser() {
                 setTimeout(() => setError(''), 2500);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setError('Ocorreu um erro. Tente novamente.');
             setTimeout(() => setError(''), 2500);
         }

@@ -4,6 +4,7 @@ import cors from 'cors';
 import { rateLimit } from 'express-rate-limit';
 import apicache from 'apicache';
 import { authMiddleware } from './middlewares/middleware';
+import logger, { logError, requestContextMiddleware } from './lib/logger';
 
 const app: Application = express();
 
@@ -36,6 +37,28 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' })); // Add size limit for security
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); 
 
+// Request context middleware - must be before authentication
+app.use(requestContextMiddleware);
+
+// Request logging middleware
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        logger.info(`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`, {
+            metadata: {
+                method: req.method,
+                url: req.originalUrl,
+                status: res.statusCode,
+                responseTime: duration,
+                ip: req.ip,
+                userAgent: req.get('user-agent')
+            }
+        });
+    });
+    next();
+});
+
 // Apply rate limiting to all requests
 app.use(limiter);
 
@@ -50,7 +73,12 @@ app.use('/api', routes);
 
 // Global error handler
 app.use((err: Error, req: express.Request, res: express.Response) => {
-    console.error(err.stack);
+    logError(err.message, {
+        stack: err.stack,
+        url: req.originalUrl,
+        method: req.method
+    });
+    
     res.status(500).json({ 
         error: process.env.NODE_ENV === 'production' 
             ? 'Something went wrong!' 

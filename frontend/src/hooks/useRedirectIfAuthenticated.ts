@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserType } from '@/context/auth-context';
+import { UserType } from '@/types/types';
 
 export const useRedirectIfAuthenticated = (user: UserType) => {
   const router = useRouter();

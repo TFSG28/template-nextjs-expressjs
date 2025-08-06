@@ -1,5 +1,6 @@
 'use client';
-import { useAuth, UserType } from '@/context/auth-context';
+import { useAuth } from '@/context/auth-context';
+import { UserType } from '@/types/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, Suspense } from 'react';
 import { useForm } from 'react-hook-form';

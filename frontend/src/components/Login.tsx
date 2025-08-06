@@ -10,7 +10,7 @@ import Skeleton from 'react-loading-skeleton';
 import { toast } from 'react-toastify'; 
 import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
-import { UserType } from '@/context/auth-context';
+import { UserType } from '@/types/types';
 import { LoginForm } from '@/types/types';
 
 
@@ -32,7 +32,7 @@ const Login = () => {
             });
 
             const ans = await response.json();
-
+            
             if (response.status === 200) {
                 login(ans.token, rememberMe);
                 router.push('/');
@@ -40,7 +40,7 @@ const Login = () => {
                 toast.error('Erro de credenciais.');
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setLoading(false);
         }
         finally {

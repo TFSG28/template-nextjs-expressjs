@@ -1,6 +1,7 @@
 'use client';
-import { useAuth, UserType } from '@/context/auth-context';
-import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/context/auth-context';
+import { UserType } from '@/types/types';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaRegCircleCheck, FaRegCircleXmark } from 'react-icons/fa6';
 import Skeleton from 'react-loading-skeleton';

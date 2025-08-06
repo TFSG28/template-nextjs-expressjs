@@ -208,7 +208,7 @@ const passwdRecovery = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(200).json({ message: 'Email sent successfully' });
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
