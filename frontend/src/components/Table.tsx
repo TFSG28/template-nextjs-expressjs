@@ -1,9 +1,5 @@
 import React, { createContext, useContext } from 'react';
-
-// Types exactos de HeroUI
-type AlignType = 'start' | 'center' | 'end';
-type RadiusType = 'none' | 'sm' | 'md' | 'lg';
-type ShadowType = 'none' | 'sm' | 'md' | 'lg';
+import { AlignType, RadiusType, ShadowType, ClassValue } from '@/types/types';
 
 interface ClassNames {
     base?: string;
@@ -106,8 +102,6 @@ interface TableContextValue {
 
 const TableContext = createContext<TableContextValue | null>(null);
 
-// Utility function exacta de HeroUI con soporte para objetos condicionales
-type ClassValue = string | number | boolean | undefined | null | { [key: string]: boolean | undefined };
 
 const cn = (...classes: ClassValue[]): string => {
     const result: string[] = [];

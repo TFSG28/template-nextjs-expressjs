@@ -11,11 +11,8 @@ import { toast } from 'react-toastify';
 import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { UserType } from '@/context/auth-context';
+import { LoginForm } from '@/types/types';
 
-type LoginForm = {
-    email: string;
-    password: string;
-}
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();

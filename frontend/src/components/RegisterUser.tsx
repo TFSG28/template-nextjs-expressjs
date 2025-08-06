@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaEye } from 'react-icons/fa';
 import { FaEyeSlash } from 'react-icons/fa';
@@ -11,12 +11,7 @@ import { toast } from 'react-toastify';
 import { useAuth, UserType } from '@/context/auth-context';
 import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
-type RegisterForm = {
-    name: string;
-    lastname: string;
-    email: string;
-    password: string;
-}
+import { RegisterForm } from '@/types/types';
 
 export default function RegisterUser() {
     const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
