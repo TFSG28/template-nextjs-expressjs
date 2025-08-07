@@ -10,8 +10,7 @@ import Skeleton from 'react-loading-skeleton';
 import { toast } from 'react-toastify'; 
 import { useRedirectIfAuthenticated } from '@/hooks/useRedirectIfAuthenticated';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
-import { UserType } from '@/types/types';
-import { LoginForm } from '@/types/types';
+import { UserType, LoginForm } from '@/types/types';
 
 
 const Login = () => {
@@ -76,7 +75,7 @@ const Login = () => {
                                 <input
                                     id="email"
                                     {...register('email', {
-                                        required: 'Campo obligatorio',
+                                        required: 'Campo obrigatório',
                                         pattern: {
                                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                             message: 'Email inválido'
@@ -98,7 +97,7 @@ const Login = () => {
                                     <input
                                         id="password"
                                         {...register('password', {
-                                            required: 'Campo obligatorio',
+                                            required: 'Campo obrigatório',
                                             minLength: {
                                                 value: 6,
                                                 message: 'Mínimo 6 caracteres'
